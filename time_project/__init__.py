@@ -3,12 +3,14 @@ from flask import Flask
 from flask_sqlalchemy import SQLAlchemy
 from flask_migrate import Migrate
 from flask_login import LoginManager
+from dotenv import load_dotenv
 
 
 app = Flask(__name__)
 
 #絶対パスの参照
-app.config['SECRET_KEY'] = 'myseretkey'
+load_dotenv()
+app.config['SECRET_KEY'] = os.getenv('SECRET_KEY')
 basedir = os.path.abspath(os.path.dirname(__file__))
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///'+os.path.join(basedir,'data.sqlite')
 #SQLAlchemyの変更追跡機能の無効化
@@ -38,7 +40,7 @@ def load_user(user_id):
 @event.listens_for(Engine,"connect")
 def set_sqlite_pragma(dbapi_connection, connection_record):
     cursor = dbapi_connection.cursor()
-    cursor.execute("PRAGMA foregin_keys=ON")
+    cursor.execute("PRAGMA foreign_keys=ON")
     cursor.close()
 
 

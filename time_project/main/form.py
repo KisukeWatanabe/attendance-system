@@ -7,7 +7,7 @@ class Loginform(FlaskForm):
     users_id = StringField('ID', validators=[DataRequired()])
     password = PasswordField('パスワード',validators=[DataRequired()])
     submit = SubmitField('ログイン')
-
+    
 class Registrationform(FlaskForm):
      username = StringField('従業員名',validators=[DataRequired()])
      users_id = StringField('従業員ID',validators=[DataRequired()])

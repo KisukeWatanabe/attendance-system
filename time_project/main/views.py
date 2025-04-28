@@ -51,8 +51,6 @@ def user_maintenance():
 @login_required
 def user_account(user_id):
     user =  User.query.get_or_404(user_id)
-    if user.id != current_user.id and not current_user.is_administrator:
-          abort(403)
     form = UpdateUserform(user_id=user_id)
     if form.validate_on_submit():
         user.username = form.username.data
@@ -245,7 +243,7 @@ def work_timepage():
                            summary = summary,
                            timedelta=timedelta)
 #メインの出退勤ページ
-@main.route('/index',methods = ['GET','POST'])
+@main.route('/',methods = ['GET','POST'])
 def index():
     users = User.query.order_by(User.id).all()
     today = datetime.now().date()
@@ -298,6 +296,7 @@ def index():
     
     else:
         return render_template('index.html',users=users,user_status=user_status)
+
 
 @main.route('/<int:user_id>/<int:year>/<int:month>/<int:day>/time_correct',methods=['GET','POST'])
 @login_required
