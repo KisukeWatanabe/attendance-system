@@ -148,7 +148,7 @@ def work_timepage():
     else:
         next_month = select_month + 1
 
-    # ← 前月21日〜当月20日
+    # 前月21日〜当月20日
     period_start, period_end = get_salary_period(select_year, select_month)
     days_in_period = (period_end - period_start).days + 1
 
