@@ -209,9 +209,9 @@ def work_timepage():
             if summary['employment_type'] == "parttime":
                 adjusted_minutes = (total_work_minutes // 15) * 15
                 daily_salary = (adjusted_minutes / 60) * summary['hourly_wage']
-                summary['basic_salary'] += daily_salary  # ここで毎日積み上げ
+                summary['basic_salary'] += daily_salary  
             elif summary['employment_type'] == "fulltime":
-                daily_salary = 0  # 正社員は今は仮対応
+                daily_salary = 0  
                 
             # 日別記録
             daily_records[r.date] = {
@@ -243,14 +243,14 @@ def work_timepage():
                            summary = summary,
                            timedelta=timedelta)
 #メインの出退勤ページ
-@main.route('/',methods = ['GET','POST'])
+@main.route('/', methods=['GET', 'POST'])
 def index():
     users = User.query.order_by(User.id).all()
     today = datetime.now().date()
     user_status = {}
 
     for user in users:
-        record = Timepage.query.filter_by(user_id=user.id,date = today).first()
+        record = Timepage.query.filter_by(user_id=user.id, date=today).first()
         if record:
             if record.rest_in and not record.rest_out:
                 user_status[user.id] = "on_break"
@@ -264,39 +264,41 @@ def index():
     if request.method == 'POST':
         data = request.get_json()
         if data is None:
-            return jsonify({'error':'データが受け取れませんでした'}),400
-        
+            return jsonify({'error': 'データが受け取れませんでした'}), 400
+
         user_id = data.get('user_id')
         time_str = data.get('time')
         event_type = data.get('eventType')
-        time = datetime.strptime(time_str,'%H:%M:%S').time()
+        time = datetime.strptime(time_str, '%H:%M:%S').time()
 
-
-        record = Timepage.query.filter_by(user_id=user_id,date=today).first()
+        record = Timepage.query.filter_by(user_id=user_id, date=today).first()
         if not record:
-            record = Timepage(user_id=user_id,date=today)
+            record = Timepage(user_id=user_id, date=today)
             db.session.add(record)
 
         if event_type == "出勤":
             if record.check_in:
-                return jsonify({'error':'既に本日出勤しています！'}),400
+                return jsonify({'error': '既に本日出勤しています！'}), 400
             else:
                 record.check_in = time
         elif event_type == "退勤":
             check_out_datetime = datetime.combine(today, time)
-            if time < record.check_in :
-               check_out_datetime += timedelta(days=1)
+            if time < record.check_in:
+                check_out_datetime += timedelta(days=1)
             record.check_out = check_out_datetime.time()
         elif event_type == "休憩":
             record.rest_in = time
         elif event_type == "復帰":
             record.rest_out = time
-        db.session.commit()
-        return jsonify({'message':'打刻成功'}),200
-    
-    else:
-        return render_template('index.html',users=users,user_status=user_status)
 
+        db.session.commit()
+
+        
+        return jsonify({'message': '打刻成功'}), 200
+
+    else:
+        # GETのときは普通にテンプレートを返す
+        return render_template('index.html', users=users, user_status=user_status)
 
 @main.route('/<int:user_id>/<int:year>/<int:month>/<int:day>/time_correct',methods=['GET','POST'])
 @login_required

@@ -88,7 +88,7 @@ function recordEvent(eventType, user_id) {
         note: ""
     };
 
-    return fetch('/index', {
+    return fetch('/', {
         method: 'POST',
         headers: {
             'Content-Type': 'application/json'
@@ -118,7 +118,6 @@ window.addEventListener('DOMContentLoaded', () => {
     setInterval(updateTime, 1000);
 
     userIds.forEach(user_id => {
-        // 最初にボタンとアイコン状態を更新（←ここを追加）
         updateButtonStates(user_id);
 
         const modal = document.getElementById(`modalUser${user_id}`);
