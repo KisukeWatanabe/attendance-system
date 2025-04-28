@@ -1,0 +1,65 @@
+{% extends "base.html" %}
+{% block content %}
+    <header class="bg-dark py-4 mb-4 shadow-sm text-white">
+        <div class="container text-center">
+            <h1 class="fw-bold">出退勤</h1>
+        </div>
+    </header>
+
+    <div class="container text-center mb-4">
+        <h3 id="current-date" class="fw-bold"></h3>
+        <h4 id="current-time" class="text-muted"></h4>
+    </div>
+    <div class="row row-cols-2 row-cols-sm-3 row-cols-md-4 g-4 justify-content">
+        {% for user in users %}
+        <div class="col">
+            <div class="card shadow-lg border-0 rounded-4 h-100 text-center bg-light hover-scale"
+                 data-bs-toggle="modal"
+                 data-bs-target="#modalUser{{ user.id }}">
+                <div class="card-body py-4">
+                    <div class="fs-1" id="statusIcon{{ user.id }}">😴</div>
+                    <h5 class="card-title mt-3 fw-semibold">{{ user.username }}</h5>
+                </div>
+            </div>
+        </div>
+    
+        <!-- モーダル -->
+        <div class="modal fade" id="modalUser{{ user.id }}" tabindex="-1" aria-hidden="true">
+            <div class="modal-dialog modal-dialog-centered">
+                <div class="modal-content rounded-4 shadow">
+                    <div class="modal-header bg-dark text-white rounded-top-4">
+                        <h5 class="modal-title">{{ user.username }}</h5>
+                        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body text-center py-4">
+                        <div class="d-grid gap-3">
+                            <button id="check_InBtn{{ user.id }}" class="btn btn-success btn-lg rounded-pill shadow-sm">
+                                🟢 出勤
+                            </button>
+                            <button id="checkOutBtn{{ user.id }}" class="btn btn-danger btn-lg rounded-pill shadow-sm">
+                                🔴 退勤
+                            </button>
+                            <button id="rest_inBtn{{ user.id }}" class="btn btn-warning btn-lg rounded-pill shadow-sm">
+                                🟡 休憩
+                            </button>
+                            <button id="rest_outBtn{{ user.id }}" class="btn btn-primary btn-lg rounded-pill shadow-sm">
+                                🔵 復帰
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+    
+    <script id="user-ids" type="application/json">
+        {{ users | map(attribute="id") | list | tojson | safe }}
+    </script>
+    
+    <script id="user-status" type="application/json">
+        {{ user_status | tojson | safe }}
+    </script>
+    
+    <script type="module" src="{{ url_for('static', filename='indexscript.js') }}"></script>
+{% endblock %}

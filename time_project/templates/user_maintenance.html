@@ -1,0 +1,65 @@
+{% extends "base.html" %}
+{% block content %}
+    <header class="bg-dark py-4 mb-4 shadow-sm text-white">
+        <div class="container text-center">
+            <h1 class="fw-bold">従業員管理</h1>
+        </div>
+    </header>
+    <section id="menu">
+        <div class="container my-3 py-3 bg-light">
+            <div class="row">
+                <div class="col-md-3">
+                    <a href="{{url_for('main.user_register')}}" class="btn btn-primary w-100">
+                        新規登録
+                    </a>
+                </div>
+            </div>
+        </div>
+    </section>
+    <section id="list">
+        <div class="container my-3">
+            <div class="row">
+                <div class="col-md-9">
+                    <div class="card shadow-sm">
+                        <div class="card-header">
+                            <h4>従業員一覧</h4>
+                        </div>
+                        <div class="table-responsive">
+                            <table class="table table-striped text-nowrap">
+                                <thead class="table-dark">
+                                    <tr>
+                                        <th>従業員名</th>
+                                        <th>従業員ID</th>
+                                        <th>雇用形態</th>
+                                        <th>固定給、時給</th>
+                                        <th>管理者権限</th>
+                                        <th>変更</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {% for user in users.items %}
+                                    <tr>
+                                        <td>{{ user.username }}</td>
+                                        <td>{{ user.users_id }}</td>
+                                        <td>{{ user.employment_display}}</td>
+                                        <td>{{ user.wage_display}}</td>
+                                        <td>{{ 'あり' if user.administrator == "1" else 'なし' }}</td>
+                                        <td>
+                                            <a href="{{ url_for('main.user_account',user_id=user.id)}}" class="btn btn-secondary">
+                                            変更
+                                        </a>
+                                    </td>
+                                    </tr>
+                                    {% endfor %}
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    
+
+{% endblock %}

@@ -1,0 +1,72 @@
+{% extends "base.html "%}
+{% block content %}
+    <section id="menu">
+        <div class="container my-3 py-4 bg-light">
+            <div class="row">
+                <div class="col-md-3">
+                    <button type="button" class="btn btn-danger w-100" data-bs-toggle="modal" data-bs-target="#del_modal">
+                        削除
+                    </button>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section id="time_correct">
+        <div class="container my-3">
+            <div class="row">
+                <div class="col-lg-6 mx-auto">
+                    <div class="card bg-info text-center">
+                      <div class="card-body text-light">
+                        <h3 class="mb-3">打刻修正</h3>
+                        <p class="mb-4">時刻を修正してください</p>
+                        <form method="POST">
+                            {{ form.hidden_tag()}}
+                          <div class="form-floating mb-3">
+                            {{render_field(form.check_in,class="form-control", id="check_in")}}
+                          </div>
+                  
+                          <div class="form-floating mb-3">
+                            {{render_field(form.check_out,class="form-control", id="check_out")}}
+                          </div>
+                  
+                          <div class="form-floating mb-3">
+                            {{render_field(form.rest_in,class="form-control", id="rest_in")}}
+                          </div>
+                  
+                          <div class="form-floating mb-4">
+                            {{render_field(form.rest_out,class="form-control", id="rest_out")}}
+                          </div>
+                            {{render_field(form.submit, class="btn btn-primary btn-lg w-100 mb-3")}}
+                        </form>
+                      </div>
+                    </div>
+                  </div>
+            </div>
+        </div>
+    </section>
+  
+  <!-- Modal -->
+  <div class="modal fade" id="del_modal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="exampleModalLabel">削除確認</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body">
+          <p>{{record.date}}の打刻を削除しますか？</p>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">キャンセル</button>
+          {% if record %}
+          <form action="{{url_for('main.time_delete',timepage_id=record.id)}}" method="POST">
+              <input type="submit" class="btn btn-danger" value="削除">
+          </form>
+          {% endif %}
+        </div>
+      </div>
+    </div>
+  </div>
+    
+{% endblock %}

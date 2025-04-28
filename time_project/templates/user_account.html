@@ -1,0 +1,76 @@
+{% extends "base.html" %}
+{% block content %}
+    <section id="menu">
+        <div class="container my-3 py-4 bg-light">
+            <div class="row">
+                <div class="col-md-3">
+                    <button type="button" class="btn btn-danger w-100" data-bs-toggle="modal" data-bs-target="#del_modal">
+                        削除
+                    </button>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section id="user_update">
+        <div class="container my-3">
+            <div class="row">
+                <div class="col-lg-4 mx-auto">
+                    <div class="card bg-success text-center">
+                        <div class="card-body text-light">
+                            <h3>ユーザー更新</h3>
+                            <p>ユーザー情報を変更してください。</p>
+                            <form method="POST">
+                                {{ form.hidden_tag() }}
+                                <div class="mb-3">
+                                    {{render_field(form.username,placeholder="従業員名",class="form-control form-control-lg")}}
+                                </div>
+                                <div class="mb-3">
+                                    {{render_field(form.users_id,class="form-control form-control-lg", placeholder="従業員ID")}}
+                                </div>
+                                <div class="mb-3">
+                                    {{render_field(form.password,class="form-control form-control-lg" ,placeholder="新パスワード")}}
+                                </div>
+                                <div class="mb-3">
+                                    {{ render_field(form.pass_confirm, placeholder="新パスワード(確認)", class="form-control form-control-lg") }}
+                                </div>
+                                <hr>
+                                <p class="text-white">雇用形態を選択してください：</p>
+                                <div class="mb-3">
+                                    {{ render_field(form.employment_type,class="form-check form-check-inline")}}
+                                <div class="mb-3 mt-3">
+                                    {{ render_field(form.fixed_wage, placeholder="固定給（正社員）", class="form-control form-control-lg") }}
+                                </div>
+                                <div class="mb-3">
+                                    {{ render_field(form.hourly_wage, placeholder="時給（アルバイト）", class="form-control form-control-lg") }}
+                                </div>
+                                    {{form.submit(class="btn btn-outline-light w-100")}}                 
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+  
+  <!-- Modal -->
+  <div class="modal fade" id="del_modal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="exampleModalLabel">削除確認</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body">
+          <p>このユーザーを削除しますか？</p>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">キャンセル</button>
+          <form action="{{url_for('main.delete',user_id=form.id)}}" method="POST">
+              <input type="submit" class="btn btn-danger" value="削除">
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
+{% endblock %}
