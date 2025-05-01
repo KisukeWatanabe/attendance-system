@@ -50,24 +50,6 @@
 管理者用の履歴・集計画面：  
 ![管理者画面](img/timepage.png)
 
----
-
-## ディレクトリ構成
-
-flask_pomme/
-├── app.py
-├── time_project/
-│   ├── __init__.py
-│   ├── models.py
-│   └── main/views.py
-├── static/
-│   └── indexscript.js
-├── templates/
-│   └── index.html
-├── img/
-│   ├── screenshot1.png
-│   └── screenshot2.png
-└── requirements.txt
 
 ---
 
