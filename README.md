@@ -1,75 +1,76 @@
-# 👨‍💼 勤怠管理Webアプリ (仮名: Attendance System)
+# 👨‍💼 勤怠管理Webアプリ (Attendance System)
 
 ## 🌟 プロジェクト概要
 
-自営業のお店で実際に使用するために開発した勤怠管理Webアプリです。出勤、退勤、休憩、復帰をボタン一つで簡単に打刻でき、月ごとの給与計算も自動化しました。
+本アプリは、自営業のケーキ店にて実際に運用することを想定して開発した、勤怠管理用のWebアプリケーションです。  
+従業員がスマートフォンやタブレットから出勤・退勤・休憩・復帰をワンタップで打刻できるシステムで、管理者は出退勤の履歴確認・打刻修正・月次給与の自動計算までを一括で管理できます。
+
+「紙のタイムカードと手計算から解放されること」を目的に開発され、現在はRender上でデプロイされ、テスト運用中です。
 
 ---
 
 ## 🔧 使用技術
 
-- Python (Flask)
-- HTML / CSS / JavaScript
-- SQLite / SQLAlchemy
-- Render (本番環境ホスティング)
+- **言語・フレームワーク**  
+  Python (Flask), JavaScript, HTML5, CSS3 (Bootstrap)
+
+- **データベース / ORM**  
+  SQLite, SQLAlchemy, Flask-Migrate
+
+- **デプロイ**
+  Render（本番環境）
+
+- **その他**  
+  Jinja2（テンプレートエンジン）
 
 ---
 
 ## ✨ 主な機能
 
-## ✨ 主な機能
-
-**【一般従業員向け機能】**
-- 出勤 / 退勤 / 休憩 / 復帰の打刻管理
----
-
-**【管理者専用機能】**
-- 打刻データの訂正機能（ミス打刻の修正）
-- 作業時間・休憩時間を考慮した給与自動計算
-- 出退勤履歴の一覧表示
-- 月ごとの出勤日数・労働時間・給与合計の集計表示
+### 【一般従業員向け機能】
+- 出勤 / 退勤 / 休憩 / 復帰のワンタッチ打刻
+- 状態に応じたボタン制御（誤操作防止）
+- 個別モーダルUIによる直感的操作
 
 ---
 
-## 🔍 セットアップ手順
-
-1. リポジトリをクローン
-2. 仮想環境(バーチャル環境)を作成
-3. 必要なパッケージをインストール
-4. アプリを起動
-
-```bash
-# クローン
-git clone https://github.com/KisukeWatanabe/attendance-system.git
-cd attendance-system
-
-# 仮想環境作成
-python -m venv venv
-source venv/bin/activate   # Windowsは venv\Scripts\activate
-
-# パッケージインストール
-pip install -r requirements.txt
-
-# Flask起動
-flask run
-```
-
----
-
-## 🌐 本番環境URL (Render)
-
-(実際にデプロイ完了後に貼り付け)
-
-```
-https://your-app.onrender.com
-```
+### 【管理者専用機能】
+- 打刻データの訂正機能（出勤忘れや誤打刻の修正）
+- 出退勤履歴の一覧表示（従業員別・日別）
+- 月ごとの出勤日数・労働時間・給与合計の自動集計
+- アルバイト（時給制）と正社員（固定給）に対応
 
 ---
 
 ## 📷 スクリーンショット
 
-(打刻画面や給与計算画面などを貼り付けると更に体験値UP)
+従業員用の出退勤画面：  
+![出退勤画面](img/screenshot1.png)
+
+管理者用の履歴・集計画面：  
+![管理者画面](img/screenshot2.png)
+
+---
+
+## ディレクトリ構成
+
+flask_pomme/
+├── app.py
+├── time_project/
+│   ├── __init__.py
+│   ├── models.py
+│   └── main/views.py
+├── static/
+│   └── indexscript.js
+├── templates/
+│   └── index.html
+├── img/
+│   ├── screenshot1.png
+│   └── screenshot2.png
+└── requirements.txt
 
 ---
 
 ## 💡 作成者
+
+KisukeWatanabe
