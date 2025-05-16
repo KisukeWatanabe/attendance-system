@@ -56,8 +56,10 @@ def user_account(user_id):
         user.username = form.username.data
         user.users_id = form.users_id.data
         user.employment_type = form.employment_type.data
-        user.hourly_wage = form.hourly_wage.data
-        user.fixed_wage = form.fixed_wage.data
+        hw = form.hourly_wage.data
+        fw = form.fixed_wage.data
+        user.hourly_wage = int(hw) if hw and hw.isdigit() else None
+        user.fixed_wage = int(fw) if fw and fw.isdigit() else None
 
         if form.password.data:
             user.passoword = form.password.data
@@ -69,8 +71,8 @@ def user_account(user_id):
         form.username.data = user.username
         form.users_id.data = user.users_id
         form.employment_type.data = user.employment_type
-        form.hourly_wage.data = user.hourly_wage
-        form.fixed_wage.data = user.fixed_wage
+        form.hourly_wage.data = str(user.hourly_wage) if user.hourly_wage is not None else ''
+        form.fixed_wage.data = str(user.fixed_wage) if user.fixed_wage is not None else ''
     return render_template('user_account.html',form = form)
 
 @main.route('/user_register', methods = ['GET','POST'])
