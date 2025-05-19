@@ -227,7 +227,6 @@ def work_timepage():
             else:
                 # 残業処理（22時以降）
                 normal_limit = 22 * 60
-                
                 if out_minutes <= normal_limit:
                     regular_minutes = net_minutes
                     overtime_minutes = 0
