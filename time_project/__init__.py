@@ -14,12 +14,10 @@ app.config['SECRET_KEY'] = os.getenv('SECRET_KEY')
 basedir = os.path.abspath(os.path.dirname(__file__))
 uri = os.getenv('DATABASE_URL')
 
-# PostgreSQLの旧フォーマット対応（herokuなど）
 if uri and uri.startswith("postgres://"):
     uri = uri.replace("postgres://", "postgresql://", 1)
 
 app.config['SQLALCHEMY_DATABASE_URI'] = uri
-#SQLAlchemyの変更追跡機能の無効化
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 
 db = SQLAlchemy(app)

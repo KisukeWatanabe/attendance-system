@@ -19,22 +19,26 @@
                     <div class="card bg-info text-center">
                       <div class="card-body text-light">
                         <h3 class="mb-3">打刻修正</h3>
-                        <p class="mb-4">時刻を修正してください</p>
+                        <p class="mb-4">時刻を修正してください（例 11:00←半角数字とコロンを使ってください）</p>
                         <form method="POST">
                             {{ form.hidden_tag()}}
                           <div class="form-floating mb-3">
+                            <p>出勤時刻</p>
                             {{render_field(form.check_in,class="form-control", id="check_in")}}
                           </div>
                   
                           <div class="form-floating mb-3">
+                            <p>退勤時刻</p>
                             {{render_field(form.check_out,class="form-control", id="check_out")}}
                           </div>
                   
                           <div class="form-floating mb-3">
+                            <p>休憩時刻</p>
                             {{render_field(form.rest_in,class="form-control", id="rest_in")}}
                           </div>
                   
                           <div class="form-floating mb-4">
+                            <p>復帰時刻</p>
                             {{render_field(form.rest_out,class="form-control", id="rest_out")}}
                           </div>
                             {{render_field(form.submit, class="btn btn-primary btn-lg w-100 mb-3")}}

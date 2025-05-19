@@ -112,6 +112,7 @@ def delete(user_id):
 @login_required
 def work_timepage():
     def get_salary_period(year, month):
+        #前月21日から今月20日まで表示
         if month == 1:
             start = date(year - 1, 12, 21)
             end = date(year, 1, 20)
@@ -152,6 +153,15 @@ def work_timepage():
     period_start, period_end = get_salary_period(select_year, select_month)
     days_in_period = (period_end - period_start).days + 1
 
+    def round_up(dt):
+        #15分単位で切り上げ
+        minutes = dt.hour * 60 + dt.minute
+        return ((minutes + 14) // 15) * 15
+
+    def round_down(dt):
+        #15分単位で切り捨て
+        minutes = dt.hour * 60 + dt.minute
+        return (minutes // 15) * 15
 
     daily_records = {}
     summary = {
@@ -169,6 +179,7 @@ def work_timepage():
         Timepage.date >= period_start,
         Timepage.date <= period_end
     ).all()
+
     for r in records_raw:
         check_in = r.check_in
         check_out = r.check_out
@@ -177,56 +188,75 @@ def work_timepage():
 
         regular_minutes = 0
         overtime_minutes = 0
-
+        daily_salary = 0
+        
         if check_in and check_out:
-            in_minutes = check_in.hour * 60 + check_in.minute
-            out_minutes = check_out.hour * 60 + check_out.minute
+            # 丸め処理
+            in_minutes = round_up(check_in)
+            out_minutes = round_down(check_out)
 
+            # 日をまたぐ場合の対応
             if out_minutes < in_minutes:
-                out_minutes += 24 * 60
+                diff = out_minutes + 1440 - in_minutes
+                if diff == 1425:
+                    work_minutes = 0
+                else:
+                    out_minutes += 1440
+                    work_minutes = out_minutes - in_minutes
+            else:
+                work_minutes = out_minutes - in_minutes
 
-            work_minutes = out_minutes - in_minutes
-
+            # 休憩時間の処理
             rest_minutes = 0
             if rest_in and rest_out:
-                rest_in_minutes = rest_in.hour * 60 + rest_in.minute
-                rest_out_minutes = rest_out.hour * 60 + rest_out.minute
+                rest_start = round_up(rest_in)
+                rest_end = round_down(rest_out)
+                if rest_end < rest_start:
+                    rest_end += 1440
+                rest_minutes = rest_end - rest_start
 
-                if rest_out_minutes < rest_in_minutes:
-                    rest_out_minutes += 24 * 60
+            # 正味労働時間
+            net_minutes = max(work_minutes - rest_minutes, 0)
 
-                rest_minutes = rest_out_minutes - rest_in_minutes
-
-            net_minutes = work_minutes - rest_minutes
-            normal_limit_minutes = 22 * 60
-
-            if out_minutes < normal_limit_minutes:
-                regular_minutes = net_minutes
+            # 15分未満は無効
+            if net_minutes < 15:
+                net_minutes = 0
+                regular_minutes = 0
                 overtime_minutes = 0
+                daily_salary = 0
             else:
-                regular_minutes = max(normal_limit_minutes - in_minutes - rest_minutes, 0)
-                overtime_minutes = max(out_minutes - normal_limit_minutes, 0)
-            total_work_minutes = regular_minutes + (overtime_minutes *1.5)
-
-            if summary['employment_type'] == "parttime":
-                adjusted_minutes = (total_work_minutes // 15) * 15
-                daily_salary = (adjusted_minutes / 60) * summary['hourly_wage']
-                summary['basic_salary'] += daily_salary  
-            elif summary['employment_type'] == "fulltime":
-                daily_salary = 0  
+                # 残業処理（22時以降）
+                normal_limit = 22 * 60
                 
-            # 日別記録
+                if out_minutes <= normal_limit:
+                    regular_minutes = net_minutes
+                    overtime_minutes = 0
+                else:
+                    regular_minutes = max(normal_limit - in_minutes - rest_minutes, 0)
+                    overtime_minutes = max(out_minutes - normal_limit, 0)
+
+                total_work_minutes = regular_minutes + (overtime_minutes * 1.5)
+
+                # 給与計算
+                if summary['employment_type'] == "parttime":
+                    adjusted_minutes = (total_work_minutes // 15) * 15
+                    daily_salary = (adjusted_minutes / 60) * summary['hourly_wage']
+                    summary['basic_salary'] += daily_salary
+                elif summary['employment_type'] == "fulltime":
+                    daily_salary = 0
+            # 集計（15分以上勤務がある日のみ）
+            if net_minutes >= 15:
+                summary['working_days'] += 1
+                summary['total_minutes'] += regular_minutes
+                summary['overtime_minutes'] += overtime_minutes
+
+            # 日別記録に追加
             daily_records[r.date] = {
                 'record': r,
                 'regular_minutes': regular_minutes,
                 'overtime_minutes': overtime_minutes,
                 'daily_salary': daily_salary
             }
-
-            # 月間集計
-            summary['working_days'] += 1
-            summary['total_minutes'] += regular_minutes
-            summary['overtime_minutes'] += overtime_minutes
 
     
         
