@@ -27,7 +27,7 @@ login_manager = LoginManager()
 login_manager.init_app(app)
 login_manager.login_view = 'main.login'
 
-##*args,**kwargsは文字とか格納したいときに使うのかも
+##*args,**kwargsは文字とか格納したいときに使う
 def localize_callback (*args,**kwargs):
     return 'このページにアクセスするには、ログインが必要です。'
 login_manager.localize_callback = localize_callback

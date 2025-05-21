@@ -10,6 +10,7 @@ from collections import defaultdict
 
 main = Blueprint('main',__name__,)
 
+#ログインページ
 @main.route('/login', methods = ['GET','POST'])
 def login():
     form = Loginform()
@@ -40,6 +41,7 @@ def logout():
     logout_user()
     return redirect(url_for('main.user_maintenance'))
 
+#従業員管理ページ　
 @main.route('/user_maintenance')
 @login_required
 def user_maintenance():
@@ -47,6 +49,7 @@ def user_maintenance():
     users = User.query.order_by(User.id).paginate(page=page)
     return render_template('user_maintenance.html',users=users)
 
+#ユーザー修正ページ
 @main.route('/<int:user_id>/user_account',methods = ['GET','POST'])
 @login_required
 def user_account(user_id):
@@ -75,6 +78,7 @@ def user_account(user_id):
         form.fixed_wage.data = str(user.fixed_wage) if user.fixed_wage is not None else ''
     return render_template('user_account.html',form = form)
 
+#ユーザー追加ページ
 @main.route('/user_register', methods = ['GET','POST'])
 @login_required
 def user_register():
@@ -95,6 +99,7 @@ def user_register():
         return redirect(url_for('main.user_maintenance'))
     return render_template('user_register.html',form = form)
 
+#ユーザー削除ページ
 @main.route('/<int:user_id>/delete',methods = ['GET','POST'])
 @login_required
 def delete(user_id):
@@ -195,22 +200,24 @@ def work_timepage():
             in_minutes = round_up(check_in)
             out_minutes = round_down(check_out)
 
-            # 日をまたぐ場合の対応
+           
             if out_minutes < in_minutes:
-                diff = out_minutes + 1440 - in_minutes
-                if diff == 1425:
+                # 日をまたぐ場合の対応
+                rolled_over_minutes = out_minutes + 1440 - in_minutes
+                # 15分未満の早退（誤操作など）を無効にする
+                if rolled_over_minutes == 1425: 
                     work_minutes = 0
                 else:
                     out_minutes += 1440
                     work_minutes = out_minutes - in_minutes
             else:
                 work_minutes = out_minutes - in_minutes
-
             # 休憩時間の処理
             rest_minutes = 0
             if rest_in and rest_out:
                 rest_start = round_up(rest_in)
                 rest_end = round_down(rest_out)
+                #日をまたぐ場合の対応
                 if rest_end < rest_start:
                     rest_end += 1440
                 rest_minutes = rest_end - rest_start
@@ -256,8 +263,6 @@ def work_timepage():
                 'overtime_minutes': overtime_minutes,
                 'daily_salary': daily_salary
             }
-
-    
         
     return render_template('work_timepage.html',
                            users = users,
@@ -284,11 +289,11 @@ def index():
         record = Timepage.query.filter_by(user_id=user.id, date=today).first()
         if record:
             if record.rest_in and not record.rest_out:
-                user_status[user.id] = "on_break"
+                user_status[user.id] = "on_break"    #休憩中
             elif record.check_in and not record.check_out:
-                user_status[user.id] = "working"
+                user_status[user.id] = "working"     #出勤中
             else:
-                user_status[user.id] = "none"
+                user_status[user.id] = "none"        #退勤済み
         else:
             user_status[user.id] = "none"
 
@@ -323,22 +328,19 @@ def index():
             record.rest_out = time
 
         db.session.commit()
-
         
         return jsonify({'message': '打刻成功'}), 200
-
     else:
         # GETのときは普通にテンプレートを返す
         return render_template('index.html', users=users, user_status=user_status)
-
+    
+#打刻修正ページ
 @main.route('/<int:user_id>/<int:year>/<int:month>/<int:day>/time_correct',methods=['GET','POST'])
 @login_required
 def time_correct(user_id,year,month,day):
     form = TimeCorrectform()
     target_date = date(year,month,day)
     record = Timepage.query.filter_by(user_id=user_id,date=target_date).first()
-
-
 
     if form.validate_on_submit():
         
@@ -360,6 +362,7 @@ def time_correct(user_id,year,month,day):
         form.rest_out.data = record.rest_out
 
     return render_template('time_correct.html',form=form,record=record)
+
 
 @main.route('/<int:timepage_id>/time_delete',methods=['GET','POST'])
 @login_required
