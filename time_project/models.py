@@ -53,7 +53,7 @@ class User(db.Model, UserMixin):
     @property
     def wage_display(self):
         if self.employment_type == "fulltime":
-            # 固定給（負になっても0表示）
+            # 固定給（負になっても0表示）S
             wage = self.fixed_wage if self.fixed_wage and self.fixed_wage > 0 else 0
             return f"{wage:,}円"
         elif self.employment_type == "parttime":
