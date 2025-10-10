@@ -11,7 +11,7 @@
 ## 🔧 使用技術
 
 - **言語・フレームワーク**  
-  Python (Flask), JavaScript, HTML5, CSS3 (Bootstrap)
+  Python 3(Flask), JavaScript, HTML5, CSS3 (Bootstrap5)
 
 - **データベース / ORM**  
   PostgreSQL, SQLAlchemy, Flask-Migrate
