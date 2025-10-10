@@ -53,12 +53,16 @@ class User(db.Model, UserMixin):
     @property
     def wage_display(self):
         if self.employment_type == "fulltime":
-            return f"{self.fixed_wage:,}円" 
+            # 固定給（負になっても0表示）
+            wage = self.fixed_wage if self.fixed_wage and self.fixed_wage > 0 else 0
+            return f"{wage:,}円"
         elif self.employment_type == "parttime":
-            return f"{self.hourly_wage:,}円"
+            # 時給（負を0円表示）
+            wage = self.hourly_wage if self.hourly_wage and self.hourly_wage > 0 else 0
+            return f"{wage:,}円"
         else:
             return "未設定"
-    
+        
     @password.setter
     def password(self,password):
         self.password_hash = generate_password_hash(password)

@@ -74,8 +74,8 @@
                     -
                   {% endif %}
                 </td>
-                <td>{{ summary.total_minutes // 60 }}時間{{ summary.total_minutes % 60 }}分</td>
-                <td>{{ summary.overtime_minutes // 60 }}時間{{ summary.overtime_minutes % 60 }}分</td>
+                <td>{{ (summary.total_minutes / 60)| int }}時間{{ summary.total_minutes % 60 }}分</td>
+                <td>{{ (summary.overtime_minutes / 60)| int }}時間{{ summary.overtime_minutes % 60 }}分</td>
                 <td>{{ "{:,}".format(summary.basic_salary | round(0, 'floor')) }}円</td>
              </tr>
           </tbody>
@@ -116,8 +116,8 @@
                   <td>{{ data.record.check_out or '' }}</td>
                   <td>{{ data.record.rest_in or '' }}</td>
                   <td>{{ data.record.rest_out or '' }}</td>
-                  <td>{{ data.regular_minutes // 60 }}時間{{ data.regular_minutes % 60 }}分</td>
-                  <td>{{ data.overtime_minutes // 60 }}時間{{ data.overtime_minutes % 60 }}分</td>
+                  <td>{{ (data.regular_minutes / 60)| int }}時間{{ data.regular_minutes % 60 }}分</td>
+                  <td>{{ (data.overtime_minutes / 60)| int }}時間{{ data.overtime_minutes % 60 }}分</td>
                   <td>{% if select_user.employment_type == 'parttime' %}
                            {{ "{:,}".format(data.daily_salary|round(0, 'floor')) }}円
                        {% else %}
