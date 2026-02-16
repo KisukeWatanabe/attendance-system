@@ -1,3 +1,4 @@
+<!-- ログイン画面 -->
 {% extends "base.html"%}
 {% block content %}
     <section id="login">
@@ -15,12 +16,12 @@
                                 <div class="mb-3">
                                     {{render_field(form.password,class="form-control form-control-lg", placeholder="パスワード")}}
                                 </div>
-                                    {{form.submit(class="btn btn-outline-light w-100",value = "ログイン")}}                 
+                                    {{form.submit(class="btn btn-outline-light w-100",value = "ログイン")}}
                             </form>
                         </div>
                     </div>
                 </div>
             </div>
         </div>
-    </section>    
+    </section>
 {% endblock %}

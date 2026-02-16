@@ -1,3 +1,4 @@
+<!-- 従業員新規登録画面 -->
 {% extends "base.html"%}
 {% block content%}
     <section id="user_register">
@@ -31,8 +32,8 @@
                                 </div>
                                 <div class="mb-3">
                                     {{ render_field(form.fixed_wage, placeholder="固定給（正社員のみ）", class="form-control form-control-lg") }}
-                                </div>                   
-                                {{form.submit(class="btn btn-outline-light w-100")}}              
+                                </div>
+                                {{form.submit(class="btn btn-outline-light w-100")}}
                             </form>
                         </div>
                     </div>

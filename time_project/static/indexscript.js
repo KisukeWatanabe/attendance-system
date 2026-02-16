@@ -123,7 +123,7 @@ window.addEventListener('DOMContentLoaded', () => {
         const modal = document.getElementById(`modalUser${user_id}`);
         if (modal) {
             modal.addEventListener('show.bs.modal', () => {
-                updateButtonStates(user_id);  
+                updateButtonStates(user_id);
             });
 
             const checkIn = document.getElementById(`check_InBtn${user_id}`);

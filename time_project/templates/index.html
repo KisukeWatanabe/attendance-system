@@ -1,65 +1,90 @@
 {% extends "base.html" %}
 {% block content %}
-    <header class="bg-dark py-4 mb-4 shadow-sm text-white">
-        <div class="container text-center">
-            <h1 class="fw-bold">出退勤</h1>
-        </div>
-    </header>
 
-    <div class="container text-center mb-4">
-        <h3 id="current-date" class="fw-bold"></h3>
-        <h4 id="current-time" class="text-muted"></h4>
+<div class="text-center mb-5">
+    <h1 class="fw-bold" style="color: var(--primary-color);">出退勤</h1>
+    <div class="d-inline-block p-3 rounded-4 shadow-sm bg-white mt-2">
+        <h3 id="current-date" class="fw-bold mb-1" style="font-size: 1.2rem;"></h3>
+        <h4 id="current-time" class="text-muted mb-0" style="font-family: 'Quicksand', sans-serif;"></h4>
     </div>
-    <div class="row row-cols-2 row-cols-sm-3 row-cols-md-4 g-4 justify-content">
-        {% for user in users %}
-        <div class="col">
-            <div class="card shadow-lg border-0 rounded-4 h-100 text-center bg-light hover-scale"
-                 data-bs-toggle="modal"
-                 data-bs-target="#modalUser{{ user.id }}">
-                <div class="card-body py-4">
-                    <div class="fs-1" id="statusIcon{{ user.id }}">😴</div>
-                    <h5 class="card-title mt-3 fw-semibold">{{ user.username }}</h5>
+</div>
+
+<div class="row row-cols-2 row-cols-sm-3 row-cols-md-4 g-4">
+    {% for user in users %}
+    <div class="col">
+        <div class="card border-0 rounded-4 h-100 text-center shadow-sm hover-scale position-relative"
+             style="cursor: pointer; transition: all 0.3s ease; background: #fff;"
+             data-bs-toggle="modal"
+             data-bs-target="#modalUser{{ user.id }}">
+            
+            <div class="card-body py-4">
+                <div class="fs-1 mb-2" id="statusIcon{{ user.id }}" style="filter: drop-shadow(0 2px 4px rgba(0,0,0,0.1));">
+                    😴
+                </div>
+                <h5 class="card-title fw-bold mb-0" style="color: var(--text-color);">{{ user.username }}</h5>
+                <span class="badge rounded-pill mt-2 px-3 py-2" id="statusLabel{{ user.id }}" 
+                      style="background-color: #eee; color: #666; font-size: 0.75rem;">
+                    未出勤
+                </span>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal fade" id="modalUser{{ user.id }}" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content border-0 rounded-4 overflow-hidden shadow">
+                <div class="modal-header border-0 pb-0">
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body text-center px-4 pb-5">
+                    <h4 class="fw-bold mb-4">{{ user.username }} さん</h4>
+                    
+                    <div class="d-grid gap-3">
+                        <button id="check_InBtn{{ user.id }}" class="btn btn-lg rounded-pill shadow-sm py-3 fw-bold border-0"
+                                style="background-color: #689F38; color: white;">
+                            ☀️ 出勤する
+                        </button>
+                        <button id="rest_inBtn{{ user.id }}" class="btn btn-lg rounded-pill shadow-sm py-3 fw-bold border-0"
+                                style="background-color: #FFA000; color: white;">
+                            ☕️ 休憩に入る
+                        </button>
+                        <button id="rest_outBtn{{ user.id }}" class="btn btn-lg rounded-pill shadow-sm py-3 fw-bold border-0"
+                                style="background-color: #448AFF; color: white;">
+                            🥐 休憩から戻る
+                        </button>
+                        <button id="checkOutBtn{{ user.id }}" class="btn btn-lg rounded-pill shadow-sm py-3 fw-bold border-0"
+                                style="background-color: #D32F2F; color: white;">
+                            🏠 退勤する
+                        </button>
+                    </div>
                 </div>
             </div>
         </div>
-    
-        <!-- モーダル -->
-        <div class="modal fade" id="modalUser{{ user.id }}" tabindex="-1" aria-hidden="true">
-            <div class="modal-dialog modal-dialog-centered">
-                <div class="modal-content rounded-4 shadow">
-                    <div class="modal-header bg-dark text-white rounded-top-4">
-                        <h5 class="modal-title">{{ user.username }}</h5>
-                        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
-                    </div>
-                    <div class="modal-body text-center py-4">
-                        <div class="d-grid gap-3">
-                            <button id="check_InBtn{{ user.id }}" class="btn btn-success btn-lg rounded-pill shadow-sm">
-                                🟢 出勤
-                            </button>
-                            <button id="checkOutBtn{{ user.id }}" class="btn btn-danger btn-lg rounded-pill shadow-sm">
-                                🔴 退勤
-                            </button>
-                            <button id="rest_inBtn{{ user.id }}" class="btn btn-warning btn-lg rounded-pill shadow-sm">
-                                🟡 休憩
-                            </button>
-                            <button id="rest_outBtn{{ user.id }}" class="btn btn-primary btn-lg rounded-pill shadow-sm">
-                                🔵 復帰
-                            </button>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-        {% endfor %}
     </div>
-    
-    <script id="user-ids" type="application/json">
-        {{ users | map(attribute="id") | list | tojson | safe }}
-    </script>
-    
-    <script id="user-status" type="application/json">
-        {{ user_status | tojson | safe }}
-    </script>
-    
-    <script type="module" src="{{ url_for('static', filename='indexscript.js') }}"></script>
+    {% endfor %}
+</div>
+
+<style>
+    .hover-scale:hover {
+        transform: translateY(-8px);
+        box-shadow: 0 10px 25px rgba(0,0,0,0.1) !important;
+        border: 1px solid var(--accent-color) !important;
+    }
+    .modal-content {
+        background-color: var(--bg-color);
+    }
+    .btn:active {
+        transform: scale(0.98);
+    }
+</style>
+
+<script id="user-ids" type="application/json">
+    {{ users | map(attribute="id") | list | tojson | safe }}
+</script>
+
+<script id="user-status" type="application/json">
+    {{ user_status | tojson | safe }}
+</script>
+
+<script type="module" src="{{ url_for('static', filename='indexscript.js') }}"></script>
 {% endblock %}

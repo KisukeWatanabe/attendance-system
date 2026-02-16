@@ -1,65 +1,77 @@
 {% extends "base.html" %}
 {% block content %}
-    <header class="bg-dark py-4 mb-4 shadow-sm text-white">
-        <div class="container text-center">
-            <h1 class="fw-bold">従業員管理</h1>
-        </div>
-    </header>
-    <section id="menu">
-        <div class="container my-3 py-3 bg-light">
-            <div class="row">
-                <div class="col-md-3">
-                    <a href="{{url_for('main.user_register')}}" class="btn btn-primary w-100">
-                        新規登録
-                    </a>
-                </div>
-            </div>
-        </div>
-    </section>
-    <section id="list">
-        <div class="container my-3">
-            <div class="row">
-                <div class="col-md-9">
-                    <div class="card shadow-sm">
-                        <div class="card-header">
-                            <h4>従業員一覧</h4>
-                        </div>
-                        <div class="table-responsive">
-                            <table class="table table-striped text-nowrap">
-                                <thead class="table-dark">
-                                    <tr>
-                                        <th>従業員名</th>
-                                        <th>従業員ID</th>
-                                        <th>雇用形態</th>
-                                        <th>固定給、時給</th>
-                                        <th>管理者権限</th>
-                                        <th>変更</th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    {% for user in users.items %}
-                                    <tr>
-                                        <td>{{ user.username }}</td>
-                                        <td>{{ user.users_id }}</td>
-                                        <td>{{ user.employment_display}}</td>
-                                        <td>{{ user.wage_display}}</td>
-                                        <td>{{ 'あり' if user.administrator == "1" else 'なし' }}</td>
-                                        <td>
-                                            <a href="{{ url_for('main.user_account',user_id=user.id)}}" class="btn btn-secondary">
-                                            変更
-                                        </a>
-                                    </td>
-                                    </tr>
-                                    {% endfor %}
-                                </tbody>
-                            </table>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </section>
 
-    
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <div>
+        <h2 class="fw-bold mb-0" style="color: var(--primary-color);">従業員管理</h2>
+        <p class="text-muted small mb-0">スタッフの情報の登録・編集ができます</p>
+    </div>
+    <a href="{{url_for('main.user_register')}}" class="btn btn-primary rounded-pill px-4 shadow-sm">
+         新規登録
+    </a>
+</div>
+
+<section id="list">
+    <div class="card border-0 shadow-sm rounded-4 overflow-hidden" style="border: 1px solid #E0D7D5 !important;">
+        <div class="card-header bg-white border-bottom py-3" style="border-bottom: 1px solid #E0D7D5 !important;">
+            <h5 class="fw-bold mb-0" style="color: var(--text-color);">従業員一覧</h5>
+        </div>
+        <div class="table-responsive">
+            <table class="table table-hover align-middle mb-0">
+                <thead style="background-color: #F8F5F2;">
+                    <tr style="color: var(--primary-color);">
+                        <th class="ps-4 py-3">従業員名</th>
+                        <th class="py-3">従業員ID</th>
+                        <th class="py-3">雇用形態</th>
+                        <th class="py-3">給与設定</th>
+                        <th class="py-3 text-center">管理者</th>
+                        <th class="py-3 pe-4 text-end">操作</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for user in users.items %}
+                    <tr>
+                        <td class="ps-4 fw-bold" style="color: var(--text-color);">{{ user.username }}</td>
+                        <td><span class="badge bg-light text-dark border">{{ user.users_id }}</span></td>
+                        <td>{{ user.employment_display }}</td>
+                        <td><span class="text-muted">¥</span> {{ user.wage_display }}</td>
+                        <td class="text-center">
+                            {% if user.administrator == "1" %}
+                                <span class="badge rounded-pill bg-info text-dark" style="font-size: 0.7rem;">Admin</span>
+                            {% else %}
+                                <span class="text-muted small">-</span>
+                            {% endif %}
+                        </td>
+                        <td class="pe-4 text-end">
+                            <a href="{{ url_for('main.user_account', user_id=user.id) }}" 
+                               class="btn btn-sm btn-outline-secondary rounded-pill px-3 shadow-xs">
+                                編集
+                            </a>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</section>
+
+<style>
+    /* テーブルのホバー色をパティスリーカラーに */
+    .table-hover tbody tr:hover {
+        background-color: #FFFBF0 !important;
+        transition: background-color 0.2s ease;
+    }
+    /* ボタンの微調整 */
+    .btn-outline-secondary {
+        border-color: #D7CCC8;
+        color: #6D4C41;
+    }
+    .btn-outline-secondary:hover {
+        background-color: #6D4C41;
+        border-color: #6D4C41;
+        color: #fff;
+    }
+</style>
 
 {% endblock %}

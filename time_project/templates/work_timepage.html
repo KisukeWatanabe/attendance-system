@@ -1,166 +1,147 @@
+<!-- 給料計算管理 -->
 {% extends "base.html" %}
 {% block content %}
 
-  <!-- ヘッダー -->
-  <header class="bg-dark py-4 mb-4 shadow-sm text-white">
-    <div class="container text-center">
-        <h1 class="fw-bold">出退勤管理</h1>
-    </div>
-</header>
+<div class="mb-4">
+    <h2 class="fw-bold mb-0" style="color: var(--primary-color);">給料計算管理</h2>
+    <p class="text-muted small">従業員ごとの勤務実績と給与概算を確認できます</p>
+</div>
 
-  <!-- フィルターセクション -->
-  <div class="container mb-4">
-    <div class="row justify-content-between">
-      
-      <!-- 従業員選択 -->
-      <div class="col-md-4 mb-3">
-        <label class="form-label">従業員を選択:</label>
-        <select id = "user-select" name ="user_id " class="form-select" onchange="this.form.submit()">
-          <option value="">従業員を選んでください</option>
-          {% for user in users%}
-          <option value="{{user.id}}"{% if user.id == select_user.id %}selected{% endif %}>{{ user.username }}</option>
-          {% endfor %}
-        </select>
-      </div>
-
-      <!-- 年月選択 -->
-      <div class="col-md-4 mb-3 text-end">
-        <label class="form-label">表示年月:</label>
-        <div class="d-flex justify-content-end">
-          <select id="year-select" class="form-select me-2 w-50">
-            {% for y in range(current_year - 1, current_year + 6) %}
-              <option value="{{ y }}" {% if y == select_year %}selected{% endif %}>{{ y }}年</option>
-            {% endfor %}
-          </select>
-          <select  id="month-select" class="form-select w-50">
-            {% for m in range(1, 13) %}
-              <option value="{{ m }}" {% if m == select_month %}selected{% endif %}>{{ m }}月</option>
-            {% endfor %}
-          </select>
+<div class="card border-0 shadow-sm rounded-4 mb-4" style="border: 1px solid #E0D7D5 !important;">
+    <div class="card-body p-4">
+        <div class="row g-3 align-items-end">
+            <div class="col-md-5">
+                <label class="form-label small fw-bold" style="color: var(--primary-color);">従業員を選択</label>
+                <select id="user-select" class="form-select rounded-pill border-secondary-subtle">
+                    <option value="">従業員を選んでください</option>
+                    {% for user in users %}
+                    <option value="{{user.id}}" {% if user.id == select_user.id %}selected{% endif %}>{{ user.username }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+            <div class="col-md-5">
+                <label class="form-label small fw-bold" style="color: var(--primary-color);">表示年月</label>
+                <div class="input-group">
+                    <select id="year-select" class="form-select rounded-start-pill border-secondary-subtle">
+                        {% for y in range(current_year - 1, current_year + 6) %}
+                        <option value="{{ y }}" {% if y == select_year %}selected{% endif %}>{{ y }}年</option>
+                        {% endfor %}
+                    </select>
+                    <select id="month-select" class="form-select rounded-end-pill border-secondary-subtle">
+                        {% for m in range(1, 13) %}
+                        <option value="{{ m }}" {% if m == select_month %}selected{% endif %}>{{ m }}月</option>
+                        {% endfor %}
+                    </select>
+                </div>
+            </div>
+            <div class="col-md-2 text-end">
+                <button class="btn btn-outline-secondary rounded-pill w-100" onclick="window.location.reload();">更新</button>
+            </div>
         </div>
-      </div>
     </div>
-  </div>
+</div>
 
-
-  <!-- 月間サマリーテーブル -->
-  <div class="container mb-5">
-    <div class="card shadow-sm">
-      <div class="card-header bg-success text-white">
-        <h5 class="mb-0">{{ next_month  }}月分の月給({{ select_year}}年{{ select_month }}月末支給予定)</h5>
-      </div>
-      <div class="table-responsive">
-        <table class="table table-bordered text-center align-middle mb-0">
-          <thead class="table-dark">
-            <tr>
-              <th>従業員名</th>
-              <th>雇用形態</th>
-              <th>出勤日数</th>
-              <th>時給</th>
-              <th>総出勤時間</th>
-              <th>総残業時間</th>
-              <th>基本給</th>
-            </tr>
-          </thead>
-          <tbody>
-             <tr>
-                <td>{{ select_user.username }}</td>
-                <td>{{ select_user.employment_display}}</td>
-                <td>{{ summary.working_days }}日</td>
-                <td>
-                  {% if select_user.employment_type == "parttime" %}
-                    {{ summary.hourly_wage }}円
-                  {% else %}
-                    -
-                  {% endif %}
-                </td>
-                <td>{{ (summary.total_minutes / 60)| int }}時間{{ summary.total_minutes % 60 }}分</td>
-                <td>{{ (summary.overtime_minutes / 60)| int }}時間{{ summary.overtime_minutes % 60 }}分</td>
-                <td>{{ "{:,}".format(summary.basic_salary | round(0, 'floor')) }}円</td>
-             </tr>
-          </tbody>
+<div class="card border-0 shadow-sm rounded-4 mb-5 overflow-hidden" style="border: 1px solid #E0D7D5 !important;">
+    <div class="card-header border-0 py-3" style="background-color: #F8F5F2;">
+        <h5 class="mb-0 fw-bold" style="color: var(--primary-color);">
+            💰 {{ select_year }}年{{ select_month }}月分 給与概算
+        </h5>
+    </div>
+    <div class="table-responsive">
+        <table class="table align-middle mb-0 text-center">
+            <thead class="small text-muted bg-light">
+                <tr>
+                    <th>出勤日数</th>
+                    <th>総出勤時間</th>
+                    <th>時間外</th>
+                    <th class="text-primary-emphasis">支給額（概算）</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr style="font-size: 1.1rem;">
+                    <td><span class="fw-bold">{{ summary.working_days }}</span> <small>日</small></td>
+                    <td><span class="fw-bold">{{ (summary.total_minutes / 60)| int }}</span> <small>h</small> <span class="fw-bold">{{ summary.total_minutes % 60 }}</span> <small>m</small></td>
+                    <td class="text-danger"><span class="fw-bold">{{ (summary.overtime_minutes / 60)| int }}</span> <small>h</small></td>
+                    <td>
+                        <span class="fs-3 fw-bold text-success" style="letter-spacing: -1px;">
+                            ¥ {{ "{:,}".format(summary.basic_salary | round(0, 'floor')) }}
+                        </span>
+                    </td>
+                </tr>
+            </tbody>
         </table>
-      </div>
     </div>
-  </div>
+</div>
 
-  <!-- 勤怠テーブル（1日〜月末まで） -->
-  <div class="container mb-5">
-    <div class="card shadow-sm">
-      <div class="card-header bg-primary text-white">
-        <h5 class="mb-0">{{ select_year }}年{{ select_month }}月の出退勤記録</h5>
-      </div>
-      <div class="table-responsive">
-        <table class="table table-striped table-bordered text-center align-middle mb-0">
-          <thead class="table-dark">
-            <tr>
-              <th>日付</th>
-              <th>出勤時刻</th>
-              <th>退勤時刻</th>
-              <th>休憩時刻</th>
-              <th>復帰時刻</th>
-              <th>総出勤時間</th>
-              <th>時間外労働</th>
-              <th>日給</th>
-              <th>打刻修正</th>
-            </tr>
-          </thead>
-          <tbody>
-            {% for i in range(days_in_period) %}
-            {% set current_date = period_start + timedelta(days=i) %}
-            {% set data = daily_records.get(current_date) %}
-              <tr>
-                <td>{{ current_date.strftime('%Y-%m-%d') }}</td>
-                {% if data %}
-                  <td>{{ data.record.check_in or '' }}</td>
-                  <td>{{ data.record.check_out or '' }}</td>
-                  <td>{{ data.record.rest_in or '' }}</td>
-                  <td>{{ data.record.rest_out or '' }}</td>
-                  <td>{{ (data.regular_minutes / 60)| int }}時間{{ data.regular_minutes % 60 }}分</td>
-                  <td>{{ (data.overtime_minutes / 60)| int }}時間{{ data.overtime_minutes % 60 }}分</td>
-                  <td>{% if select_user.employment_type == 'parttime' %}
-                           {{ "{:,}".format(data.daily_salary|round(0, 'floor')) }}円
-                       {% else %}
-                            -
-                       {% endif %}</td>
-                {% else %}
-                <td>データなし</td>
-                <td></td><td></td><td></td><td></td><td></td><td></td>
-                {% endif %}
-                <td>
-                  <a href="{{ url_for('main.time_correct',  user_id=select_user.id, year=current_date.year, month=current_date.month, day=current_date.day) }}" class="btn btn-secondary">修正</a>
-                </td>
-              </tr>
-            {% endfor %}
-          </tbody>
+<div class="card border-0 shadow-sm rounded-4 overflow-hidden" style="border: 1px solid #E0D7D5 !important;">
+    <div class="card-header bg-white border-bottom py-3">
+        <h5 class="mb-0 fw-bold" style="color: var(--text-color);">勤務詳細ログ</h5>
+    </div>
+    <div class="table-responsive">
+        <table class="table table-hover align-middle mb-0 text-center">
+            <thead class="small text-muted" style="background-color: #FDFCFB;">
+                <tr>
+                    <th class="py-3">日付</th>
+                    <th>出勤</th>
+                    <th>退勤</th>
+                    <th>休憩/復帰</th>
+                    <th>勤務時間</th>
+                    <th>時間外</th>
+                    <th>日給</th>
+                    <th>操作</th>
+                </tr>
+            </thead>
+            <tbody class="small">
+                {% for i in range(days_in_period) %}
+                {% set current_date = period_start + timedelta(days=i) %}
+                {% set data = daily_records.get(current_date) %}
+                <tr {% if current_date.weekday() >= 5 %}style="background-color: #FFF9F9;"{% endif %}>
+                    <td class="fw-bold text-muted">{{ current_date.strftime('%m/%d') }} <small>({{ ['月','火','水','木','金','土','日'][current_date.weekday()] }})</small></td>
+                    {% if data %}
+                        <td class="fw-bold">{{ data.record.check_in or '-' }}</td>
+                        <td class="fw-bold">{{ data.record.check_out or '-' }}</td>
+                        <td>
+                            <small class="text-muted">{{ data.record.rest_in or '-' }} / {{ data.record.rest_out or '-' }}</small>
+                        </td>
+                        <td>{{ (data.regular_minutes / 60)| int }}h {{ data.regular_minutes % 60 }}m</td>
+                        <td class="text-danger">{{ (data.overtime_minutes / 60)| int }}h</td>
+                        <td class="fw-bold text-success">
+                            {% if select_user.employment_type == 'parttime' %}
+                                ¥{{ "{:,}".format(data.daily_salary|round(0, 'floor')) }}
+                            {% else %}-{% endif %}
+                        </td>
+                    {% else %}
+                        <td colspan="6" class="text-muted italic small">記録なし</td>
+                    {% endif %}
+                    <td>
+                        <a href="{{ url_for('main.time_correct', user_id=select_user.id, year=current_date.year, month=current_date.month, day=current_date.day) }}" 
+                           class="btn btn-sm btn-outline-secondary rounded-pill px-3">
+                            修正
+                        </a>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
         </table>
-      </div>
     </div>
-  </div>
-      
-              
+</div>
 
-
-  <script>
-    document.addEventListener("DOMContentLoaded", function () {
-        function updatePage() {
-            const user_id = document.getElementById('user-select').value;
-            const year = document.getElementById('year-select').value;
-            const month = document.getElementById('month-select').value;
-            
-            const url = new URL(window.location.href);
-            url.searchParams.set("year",year);
-            url.searchParams.set("month",month);
-            url.searchParams.set("user_id",user_id);
-
-            window.location.href = url.toString();
-
-        }
-        document.getElementById('user-select').addEventListener('change',updatePage);
-        document.getElementById('year-select').addEventListener('change',updatePage);
-        document.getElementById('month-select').addEventListener('change',updatePage);
-    });
-  
-    </script>
+<script>
+document.addEventListener("DOMContentLoaded", function () {
+    function updatePage() {
+        const user_id = document.getElementById('user-select').value;
+        const year = document.getElementById('year-select').value;
+        const month = document.getElementById('month-select').value;
+        const url = new URL(window.location.href);
+        url.searchParams.set("year", year);
+        url.searchParams.set("month", month);
+        url.searchParams.set("user_id", user_id);
+        window.location.href = url.toString();
+    }
+    document.getElementById('user-select').addEventListener('change', updatePage);
+    document.getElementById('year-select').addEventListener('change', updatePage);
+    document.getElementById('month-select').addEventListener('change', updatePage);
+});
+</script>
 
 {% endblock %}

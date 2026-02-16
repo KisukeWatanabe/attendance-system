@@ -18,7 +18,7 @@ class User(db.Model, UserMixin):
     hourly_wage = db.Column(db.Integer,nullable=True)
     fixed_wage = db.Column(db.Integer,nullable=True)
     
-    password_hash = db.Column(db.String(128))
+    password_hash = db.Column(db.String(256))
     administrator = db.Column(db.String(1))
     Timepage_records = db.relationship('Timepage',backref ='user',lazy='dynamic',cascade='all, delete-orphan')
 
